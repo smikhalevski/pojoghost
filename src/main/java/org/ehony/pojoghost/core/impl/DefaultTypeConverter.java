@@ -26,7 +26,7 @@ public class DefaultTypeConverter<A, B> implements TypeConverter<A, B> {
     }
 
     public B convert(A from) {
-        return convert(from, (B)getRegistry().getInjector().newInstance(bClass));
+        return convert(from, (B)getRegistry().getInjector().createInstance(bClass));
     }
 
     public B convert(A from, B to) {

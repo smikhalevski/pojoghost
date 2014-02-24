@@ -4,14 +4,16 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.accessors.impl;
+package org.ehony.pojoghost.accessors;
+
+import org.ehony.pojoghost.api.*;
+import org.ehony.pojoghost.core.*;
+import org.ehony.pojoghost.core.impl.BasicBound;
 
 import java.lang.reflect.Method;
-import org.ehony.pojoghost.accessors.*;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.*;
 
-public class MethodSetter<O, T> extends BasicParentAware<O> implements Setter<O, T> {
+public class MethodSetter<O, T> implements Setter<O, T>
+{
 
     private String name;
     private Class[] argTypes;
@@ -20,8 +22,9 @@ public class MethodSetter<O, T> extends BasicParentAware<O> implements Setter<O,
 
     public MethodSetter(String name) {
         this.name = name;
+        argDefaults = new Object[]{null};
     }
-
+    
     public MethodSetter(String name, Class[] argTypes, Object[] argDefaults, int index) {
         this.name = name;
         this.argTypes = argTypes;
@@ -29,8 +32,7 @@ public class MethodSetter<O, T> extends BasicParentAware<O> implements Setter<O,
         this.index = index;
     }
 
-    private Method getMethod() {
-        O object = getParent().getObject();
+    private Method getMethod(Class<?> type) {
         try {
             Class[] argTypes = this.argTypes;
             Object[] argDefaults = this.argDefaults;
@@ -38,33 +40,29 @@ public class MethodSetter<O, T> extends BasicParentAware<O> implements Setter<O,
                 argTypes = new Class[]{};
                 argDefaults = new Object[]{};
             }
-            return object.getClass().getMethod(name, argTypes);
+            return type.getMethod(name, argTypes);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void set(Entity<O> entity, Entity<T> value) {
-        O object = entity.getObject();
+    public void set(Entity<O> to, Entity<T> value) {
+        O object = to.getObject();
         try {
             Class[] argTypes = this.argTypes;
-            Object[] argDefaults = this.argDefaults;
-            int index = this.index;
-            if (argTypes == null | argDefaults == null) {
+            if (argTypes == null) {
                 argTypes = new Class[]{value.getClass()};
-                argDefaults = new Object[]{null};
-                index = 0;
             }
             Method method = object.getClass().getMethod(name, argTypes);
             method.setAccessible(true);
             argDefaults[index] = value.getObject();
-            getMethod().invoke(object, argDefaults);
+            getMethod(object.getClass()).invoke(object, argDefaults);
         } catch (Exception e) {
-            throw new SetterException(e);
+            throw new AccessException(e);
         }
     }
 
     public Bound<T> getArgumentBound(Class<? extends O> type) {
-        return BasicBound.inspect(getMethod().getGenericReturnType());
+        return BasicBound.inspect(getMethod(type).getGenericReturnType());
     }
 }

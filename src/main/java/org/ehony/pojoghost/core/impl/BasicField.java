@@ -6,10 +6,10 @@
  */
 package org.ehony.pojoghost.core.impl;
 
-import org.ehony.pojoghost.accessors.*;
+import org.ehony.pojoghost.api.*;
 import org.ehony.pojoghost.core.*;
 
-public class BasicField<O, T> extends BasicParentAware<O> implements Field<O, T> {
+public class BasicField<O, T> implements Field<O, T> {
 
     private Getter<O, T> getter;
     private Setter<O, T> setter;
@@ -17,6 +17,16 @@ public class BasicField<O, T> extends BasicParentAware<O> implements Field<O, T>
     public BasicField(Getter<O, T> getter, Setter<O, T> setter) {
         this.getter = getter;
         this.setter = setter;
+    }
+    
+    private Entity<O> entity;
+    
+    public Entity<O> getParent() {
+        return entity;
+    }
+    
+    public void setParent(Entity<O> entity) {
+        this.entity = entity;
     }
 
     public boolean canGet() {

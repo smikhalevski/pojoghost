@@ -4,18 +4,22 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.accessors.impl;
+package org.ehony.pojoghost.accessors;
+
+import org.ehony.pojoghost.api.Getter;
+import org.ehony.pojoghost.core.*;
+import org.ehony.pojoghost.core.impl.BasicBound;
 
 import java.lang.reflect.Method;
-import org.ehony.pojoghost.accessors.Getter;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.*;
 
-public class MethodGetter<O, T> extends BasicParentAware<O> implements Getter<O, T> {
+public class MethodGetter<O, T> implements Getter<O, T>
+{
 
     private String name;
     private Class[] argTypes;
     private Object[] argDefaults;
+
+    private Entity<O> entity;
 
     public MethodGetter(String name) {
         this.name = name;
@@ -27,26 +31,26 @@ public class MethodGetter<O, T> extends BasicParentAware<O> implements Getter<O,
         this.argDefaults = argDefaults;
     }
 
-    private Method getMethod() {
-        O object = getParent().getObject();
+    private Method getMethod(Class<?> type) {
         try {
             Class[] argTypes = this.argTypes;
             Object[] argDefaults = this.argDefaults;
             if (argTypes == null | argDefaults == null) {
-                argTypes = new Class[]{};
-                argDefaults = new Object[]{};
+                argTypes = new Class[] {};
+                argDefaults = new Object[] {};
             }
-            return object.getClass().getMethod(name, argTypes);
+            return type.getMethod(name, argTypes);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Entity<T> get(Entity<O> entity) {
+    public Entity<T> get(Entity<O> from) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @SuppressWarnings("unchecked")
     public Bound<T> getReturnBound(Class<? extends O> type) {
-        return BasicBound.inspect(getMethod().getGenericReturnType());
+        return BasicBound.inspect(getMethod(type).getGenericReturnType());
     }
 }

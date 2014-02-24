@@ -6,16 +6,19 @@
  */
 package org.ehony.pojoghost.core;
 
+import java.io.Serializable;
+
 /**
  * Implicit object access proxy.
  * <p>Analogue of option pattern in Scala.</p>
- * @param <T> type of object kept by proxy.
+ * @param <Type> type of object kept (accessed) by proxy.
  */
-public interface Entity<T> {
+public interface Entity<Type> extends Serializable
+{
 
     /**
      * Get content of this entity.
-     * @return Instance of {@link T}.
+     * @return Instance of {@link Type}.
      */
-    T getObject();
+    Type getObject();
 }

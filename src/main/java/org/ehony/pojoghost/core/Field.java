@@ -6,8 +6,16 @@
  */
 package org.ehony.pojoghost.core;
 
-public interface Field<O, T> extends ParentAware<O> {
+public interface Field<O, T> {
 
+    /**
+     * Get parent of field
+     * @return
+     */
+    Entity<O> getParent();
+    
+    void setParent(Entity<O> entity);
+    
     boolean canGet();
     
     boolean canSet();

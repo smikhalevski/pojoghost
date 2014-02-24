@@ -10,11 +10,11 @@ import org.ehony.pojoghost.core.Injector;
 
 public class DefaultInjector implements Injector {
 
-    public <T> T newInstance(Class<T> type) {
-        return newInstance(type, null);
+    public <T> T createInstance(Class<T> type) {
+        return createInstance(type, null);
     }
 
-    public <T> T newInstance(Class<T> type, T instance) {
+    public <T> T createInstance(Class<T> type, T instance) {
         if (String.class.isAssignableFrom(type)) {
             return (T)new String();
         }
