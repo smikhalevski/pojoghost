@@ -6,14 +6,13 @@
  */
 package org.ehony.pojoghost.api;
 
-import java.io.Serializable;
-
 /**
  * Implicit object access proxy.
  * <p>Analogue of option pattern in Scala.</p>
+ *
  * @param <Type> type of object kept (accessed) by proxy.
  */
-public interface Entity<Type> extends Serializable
+public interface Entity<Type>
 {
 
     /**
@@ -21,6 +20,10 @@ public interface Entity<Type> extends Serializable
      * @return Instance of {@link Type}.
      */
     Type getObject();
-    
+
+    /**
+     * Returns <code>true</code> if object held by this entity is empty.
+     * <p>Definition of empty may vary depending on context and object.</p>
+     */
     boolean isEmpty();
 }

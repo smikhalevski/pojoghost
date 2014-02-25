@@ -20,7 +20,6 @@ public class SafeGetter<From, Type> implements Getter<From, Type>
     private Getter<From, Type> getter;
 
     public SafeGetter(Getter<From, Type> getter) {
-        notNull(getter, "Getter expected.");
         this.getter = getter;
     }
 

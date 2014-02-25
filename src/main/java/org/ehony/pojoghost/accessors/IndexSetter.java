@@ -16,7 +16,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.Validate.isTrue;
 
 /**
- * Set value from iterable by index, ex. <code>iterable[<b>index</b>] = value</code>.
+ * Get value from {@link List} or array by index, ex. <code>object[<b>index</b>]</code>.
  * {@inheritDoc}
  */
 public class IndexSetter<To, Type> implements Setter<To, Type>
@@ -25,35 +25,34 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
     private int index;
 
     public IndexSetter(int index) {
-        isTrue(index >= 0, "Non-negative index expected.");
         this.index = index;
     }
 
     @SuppressWarnings("unchecked")
     public void set(Entity<To> to, Entity<Type> value) {
         To o = to.getObject();
-        Type t = value.getObject();
+        Type v = value.getObject();
         Class type = o.getClass();
         if (type.isArray()) {
-            Array.set(o, index, t);
+            Array.set(o, index, v);
             return;
         }
         if (o instanceof List) {
-            ((List) o).set(index, t);
+            ((List) o).set(index, v);
             return;
         }
-        throw new UnsupportedOperationException(format("Index not supported %s[%d]", type.getName(), index));
+        throw new UnsupportedOperationException("Indexes not supported for " + type);
     }
 
     @SuppressWarnings("unchecked")
     public Bound<Type> getArgumentBound(Class<? extends To> type) {
         Bound tree = BasicBound.inspect(type);
         if (type.isArray()) {
-            return (Bound<Type>) tree.getParameterBounds().get(0);
+            return tree.getParameterBounds().get(0);
         }
         if (List.class.isAssignableFrom(type)) {
-            return (Bound<Type>) tree.findImplemetedBoundOfType(List.class).getParameterBounds().get(0);
+            return tree.findImplemetedBoundOfType(List.class).getParameterBounds().get(0);
         }
-        throw new IllegalArgumentException(type.getName() + " must be iterable.");
+        return null;
     }
 }

@@ -12,12 +12,8 @@ import org.ehony.pojoghost.api.*;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-import static java.lang.String.format;
-import static org.apache.commons.lang3.Validate.isTrue;
-import static org.apache.commons.lang3.Validate.validState;
-
 /**
- * Get value from iterable by index, ex. <code>iterable[<b>index</b>]</code>.
+ * Get value from {@link Iterable} or array by index, ex. <code>object[<b>index</b>]</code>.
  * {@inheritDoc}
  */
 public class IndexGetter<From, Type> implements Getter<From, Type>
@@ -26,7 +22,6 @@ public class IndexGetter<From, Type> implements Getter<From, Type>
     private int index;
 
     public IndexGetter(int index) {
-        isTrue(index >= 0, "Non-negative index expected.");
         this.index = index;
     }
 
@@ -38,24 +33,27 @@ public class IndexGetter<From, Type> implements Getter<From, Type>
             return new BasicEntity(Array.get(o, index));
         }
         if (o instanceof Iterable) {
+            if (index < 0) {
+                throw new IndexOutOfBoundsException("Unexpected index: " + index);
+            }
             Iterator<?> iterator = ((Iterable) o).iterator();
             for (int i = 0; i < index - 1; i++) {
                 iterator.next();
             }
             return new BasicEntity(iterator.next());
         }
-        throw new UnsupportedOperationException(format("Index not supported %s[%d]", type.getName(), index));
+        throw new UnsupportedOperationException("Indexes not supported for " + type);
     }
 
     @SuppressWarnings("unchecked")
     public Bound<Type> getReturnBound(Class<? extends From> type) {
         Bound tree = BasicBound.inspect(type);
         if (type.isArray()) {
-            return (Bound<Type>) tree.getParameterBounds().get(0);
+            return tree.getParameterBounds().get(0);
         }
         if (Iterable.class.isAssignableFrom(type)) {
-            return (Bound<Type>) tree.findImplemetedBoundOfType(Iterable.class).getParameterBounds().get(0);
+            return tree.findImplemetedBoundOfType(Iterable.class).getParameterBounds().get(0);
         }
-        throw new IllegalArgumentException(type.getName() + " must be iterable.");
+        return null;
     }
 }

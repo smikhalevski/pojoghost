@@ -17,8 +17,8 @@ public interface Getter<From, Type>
     /**
      * Get field proxy for provided object.
      * <p><b>Important:</b> returned entity may be asynchronous and can
-     * raise exception on {@link Entity#getObject()} invokation.</p>
-     * 
+     * raise exception on {@link Entity#getObject()} invocation.</p>
+     *
      * @param from entity to apply getter to.
      * @return Entity which can access field described by this getter.
      */

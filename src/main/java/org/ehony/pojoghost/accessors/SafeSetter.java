@@ -20,7 +20,6 @@ public class SafeSetter<To, Type> implements Setter<To, Type>
     private Setter<To, Type> setter;
 
     public SafeSetter(Setter<To, Type> setter) {
-        notNull(setter, "Setter expected.");
         this.setter = setter;
     }
 

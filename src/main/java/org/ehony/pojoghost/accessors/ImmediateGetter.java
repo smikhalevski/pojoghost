@@ -11,10 +11,6 @@ import org.ehony.pojoghost.api.*;
 
 import java.lang.reflect.Field;
 
-import static java.lang.String.format;
-import static org.apache.commons.lang3.Validate.matchesPattern;
-import static org.apache.commons.lang3.Validate.notBlank;
-
 /**
  * Get value by field name, ex. <code>object.<b>name</b></code>.
  * {@inheritDoc}
@@ -25,7 +21,6 @@ public class ImmediateGetter<From, Type> implements Getter<From, Type>
     private String name;
 
     public ImmediateGetter(String name) {
-        notBlank(name, "Field name expected.");
         this.name = name;
     }
 
@@ -35,7 +30,7 @@ public class ImmediateGetter<From, Type> implements Getter<From, Type>
             f.setAccessible(true);
             return f;
         } catch (NoSuchFieldException e) {
-            throw new AccessException(format("Expected %s.%s", type.getName(), name), e);
+            throw new AccessException("Field not found " + type.getName() + "#" + name, e);
         }
     }
 
@@ -46,7 +41,7 @@ public class ImmediateGetter<From, Type> implements Getter<From, Type>
         try {
             return new BasicEntity(getField(type).get(o));
         } catch (IllegalAccessException e) {
-            throw new AccessException(format("Cannot access %s.%s", type.getName(), name), e);
+            throw new AccessException("Cannot access " + type.getName() + "#" + name, e);
         }
     }
 

@@ -19,4 +19,6 @@ public interface Converter<From, To>
     To convert(From from);
 
     To convert(From from, To to);
+
+    boolean canConvert(Class<? extends From> from, Class<? extends To> to);
 }

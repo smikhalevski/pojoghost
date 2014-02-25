@@ -6,13 +6,10 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.api.*;
 import org.ehony.pojoghost.BasicBound;
+import org.ehony.pojoghost.api.*;
 
 import java.lang.reflect.Field;
-
-import static java.lang.String.format;
-import static org.apache.commons.lang3.Validate.notBlank;
 
 /**
  * Set value by field name, ex. <code>object.<b>name</b> = value</code>.
@@ -24,7 +21,6 @@ public class ImmediateSetter<To, Type> implements Setter<To, Type>
     private String name;
 
     public ImmediateSetter(String name) {
-        notBlank(name, "Field name expected.");
         this.name = name;
     }
 
@@ -34,7 +30,7 @@ public class ImmediateSetter<To, Type> implements Setter<To, Type>
             f.setAccessible(true);
             return f;
         } catch (NoSuchFieldException e) {
-            throw new AccessException(format("Expected %s.%s", type.getName(), name), e);
+            throw new AccessException("Field not found " + type.getName() + "#" + name, e);
         }
     }
 
@@ -44,7 +40,7 @@ public class ImmediateSetter<To, Type> implements Setter<To, Type>
         try {
             getField(type).set(o, value.getObject());
         } catch (IllegalAccessException e) {
-            throw new AccessException(format("Cannot access %s.%s", type.getName(), name), e);
+            throw new AccessException("Cannot access " + type.getName() + "#" + name, e);
         }
     }
 
