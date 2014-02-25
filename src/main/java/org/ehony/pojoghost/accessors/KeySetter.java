@@ -6,12 +6,15 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.api.Setter;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.BasicBound;
+import org.ehony.pojoghost.api.*;
+import org.ehony.pojoghost.BasicBound;
 
 import java.util.Map;
 
+/**
+ * Set value from map by key, ex. <code>map[<b>key</b>] = value</code>.
+ * {@inheritDoc}
+ */
 public class KeySetter<To extends Map, Type> implements Setter<To, Type>
 {
 

@@ -4,11 +4,11 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core.impl;
+package org.ehony.pojoghost;
 
 import java.lang.reflect.*;
 import java.util.*;
-import org.ehony.pojoghost.core.Bound;
+import org.ehony.pojoghost.api.Bound;
 
 public class BasicBound<T> implements Bound<T> {
 

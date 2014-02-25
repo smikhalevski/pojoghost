@@ -10,11 +10,10 @@ import org.ehony.pojoghost.api.*;
 import org.junit.Test;
 import org.ehony.pojoghost.accessors.ImmediateGetter;
 import org.ehony.pojoghost.accessors.ImmediateSetter;
-import org.ehony.pojoghost.core.Converter;
-import org.ehony.pojoghost.core.Field;
-import org.ehony.pojoghost.core.ConverterRegistry;
-import org.ehony.pojoghost.core.TypeConverter;
-import org.ehony.pojoghost.core.impl.*;
+import org.ehony.pojoghost.api.Converter;
+import org.ehony.pojoghost.api.Field;
+import org.ehony.pojoghost.api.ConverterRegistry;
+import org.ehony.pojoghost.api.TypeConverter;
 
 public class GhostTest {
     
@@ -57,4 +56,24 @@ public class GhostTest {
 
         System.out.println("Bar#b = " + registry.lookup(Foo.class, Bar.class, null).convert(new Foo(), new Bar()).b);
     }
+/*
+    @Test
+    public void testName()
+            throws Exception {
+        
+        mapping("mappingId")
+                .from(field("name"), index(1)).to(myCustomConverter, method("setSurame"))
+                
+                .from("name.1").to("setSurame()")
+                
+                .tryFrom(field("login"), key("login")).to(method("username"))
+                
+                .submapping(myCustomInjector, "fromObject", "toObject", "mappingId")
+                
+                .submapping(myCustomInjector, "fromObject", "toObject")
+                    
+                    .from().to()
+                    .end();
+                    
+    }*/
 }

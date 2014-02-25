@@ -6,12 +6,15 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.api.Getter;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.*;
+import org.ehony.pojoghost.*;
+import org.ehony.pojoghost.api.*;
 
 import java.util.Map;
 
+/**
+ * Get value from map by key, ex. <code>map[<b>key</b>]</code>.
+ * {@inheritDoc}
+ */
 public class KeyGetter<From extends Map, Type> implements Getter<From, Type>
 {
 
@@ -23,7 +26,7 @@ public class KeyGetter<From extends Map, Type> implements Getter<From, Type>
 
     @SuppressWarnings("unchecked")
     public Entity<Type> get(Entity<From> from) {
-        return new BasicEntity<Type>((Type) from.getObject().get(key));
+        return new BasicEntity(from.getObject().get(key));
     }
 
     @SuppressWarnings("unchecked")

@@ -4,7 +4,7 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.api;
+package org.ehony.pojoghost.accessors;
 
 /**
  * Runtime exception indicating field access errors.

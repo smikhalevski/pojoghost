@@ -7,7 +7,6 @@
 package org.ehony.pojoghost.accessors;
 
 import org.ehony.pojoghost.api.*;
-import org.ehony.pojoghost.core.*;
 
 import java.util.List;
 

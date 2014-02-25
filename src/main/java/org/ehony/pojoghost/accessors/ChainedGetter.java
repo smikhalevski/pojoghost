@@ -6,17 +6,16 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.api.Getter;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.BasicEntity;
+import org.ehony.pojoghost.api.*;
+import org.ehony.pojoghost.BasicEntity;
 
-import java.util.*;
+import java.util.Collection;
 
-import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
+import static org.apache.commons.lang3.Validate.*;
 
 /**
- * Sequentially execute multiple getters, ex. <code>object.a.getB().get(3)</code>.
+ * Decorator for sequential execution of multiple getters,
+ * ex. <code>object.a.getB().<b>get(3)</b></code>.
  * {@inheritDoc}
  */
 public class ChainedGetter<From, To> implements Getter<From, To>
@@ -24,6 +23,10 @@ public class ChainedGetter<From, To> implements Getter<From, To>
 
     private Collection<Getter> getters;
 
+    /**
+     * Build chain of getters.
+     * @param getters backing list of getters. 
+     */
     public ChainedGetter(Collection<Getter> getters) {
         notEmpty(getters, "Getters expected.");
         this.getters = getters;
@@ -31,28 +34,32 @@ public class ChainedGetter<From, To> implements Getter<From, To>
 
     @SuppressWarnings("unchecked")
     public Entity<To> get(Entity<From> from) {
-        Entity bridge = from;
+        Entity f = from;
         for (Getter getter : getters) {
-            bridge = getter.get(bridge);
+            f = getter.get(f);
         }
-        return new BasicEntity(bridge.getObject());
+        return new BasicEntity(f.getObject());
     }
 
     /**
      * {@inheritDoc}
-     * <p>List of backing getters is iterated and return bounds are sequentially extracted.</p>
+     * <p>List of backing getters is iterated and bounds are extracted sequentially.
+     * Exception may occur in case generic type was not explicitly specified.</p>
      * 
      * @param type class to extract information from, must conform first getter in backing list.
      * @return Description of latest getter return type.
      */
     @SuppressWarnings("unchecked")
     public Bound<To> getReturnBound(Class<? extends From> type) {
-        Bound bound = null;
-        Class<?> bridge = type;
+        Class t = type;
+        int i = getters.size();
         for (Getter getter : getters) {
-            bound = getter.getReturnBound(bridge);
-            bridge = bound.getType();
+            Bound bound = getter.getReturnBound(t);
+            if (--i == 0) {
+                return bound;
+            }
+            t = bound.getType();
         }
-        return bound;
+        throw new IllegalStateException("Getters expected.");
     }
 }

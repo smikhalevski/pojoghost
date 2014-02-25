@@ -6,15 +6,19 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.api.Setter;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.BasicBound;
+import org.ehony.pojoghost.api.*;
+import org.ehony.pojoghost.BasicBound;
 
 import java.lang.reflect.Array;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.Validate.isTrue;
 
+/**
+ * Set value from iterable by index, ex. <code>iterable[<b>index</b>] = value</code>.
+ * {@inheritDoc}
+ */
 public class IndexSetter<To, Type> implements Setter<To, Type>
 {
 
@@ -29,7 +33,8 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
     public void set(Entity<To> to, Entity<Type> value) {
         To o = to.getObject();
         Type t = value.getObject();
-        if (o.getClass().isArray()) {
+        Class type = o.getClass();
+        if (type.isArray()) {
             Array.set(o, index, t);
             return;
         }
@@ -37,7 +42,7 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
             ((List) o).set(index, t);
             return;
         }
-        throw new UnsupportedOperationException("Cannot set item by index to " + o);
+        throw new UnsupportedOperationException(format("Index not supported %s[%d]", type.getName(), index));
     }
 
     @SuppressWarnings("unchecked")
@@ -49,6 +54,6 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
         if (List.class.isAssignableFrom(type)) {
             return (Bound<Type>) tree.findImplemetedBoundOfType(List.class).getParameterBounds().get(0);
         }
-        throw new IllegalArgumentException("List expected: " + type);
+        throw new IllegalArgumentException(type.getName() + " must be iterable.");
     }
 }

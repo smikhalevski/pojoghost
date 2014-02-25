@@ -4,7 +4,7 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core;
+package org.ehony.pojoghost.api;
 
 /**
  * Strategy for creating and possibly dependency injecting objects

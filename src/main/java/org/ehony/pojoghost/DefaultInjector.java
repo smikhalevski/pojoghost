@@ -4,9 +4,9 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core.impl;
+package org.ehony.pojoghost;
 
-import org.ehony.pojoghost.core.Injector;
+import org.ehony.pojoghost.api.Injector;
 
 public class DefaultInjector implements Injector {
 

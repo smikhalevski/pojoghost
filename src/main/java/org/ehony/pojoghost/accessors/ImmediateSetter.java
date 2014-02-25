@@ -7,13 +7,17 @@
 package org.ehony.pojoghost.accessors;
 
 import org.ehony.pojoghost.api.*;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.BasicBound;
+import org.ehony.pojoghost.BasicBound;
 
 import java.lang.reflect.Field;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.Validate.notBlank;
 
+/**
+ * Set value by field name, ex. <code>object.<b>name</b> = value</code>.
+ * {@inheritDoc}
+ */
 public class ImmediateSetter<To, Type> implements Setter<To, Type>
 {
 
@@ -24,22 +28,23 @@ public class ImmediateSetter<To, Type> implements Setter<To, Type>
         this.name = name;
     }
 
-    public Field getField(Class type) {
+    private Field getField(Class type) {
         try {
             Field f = type.getDeclaredField(name);
             f.setAccessible(true);
             return f;
         } catch (NoSuchFieldException e) {
-            throw new AccessException("Expected field " + name + " at " + type, e);
+            throw new AccessException(format("Expected %s.%s", type.getName(), name), e);
         }
     }
 
     public void set(Entity<To> to, Entity<Type> value) {
         To o = to.getObject();
+        Class type = o.getClass();
         try {
-            getField(o.getClass()).set(o, value.getObject());
+            getField(type).set(o, value.getObject());
         } catch (IllegalAccessException e) {
-            throw new AccessException("Cannot set field " + name + " to " + o, e);
+            throw new AccessException(format("Cannot access %s.%s", type.getName(), name), e);
         }
     }
 

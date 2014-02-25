@@ -4,9 +4,9 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core.impl;
+package org.ehony.pojoghost;
 
-import org.ehony.pojoghost.core.Entity;
+import org.ehony.pojoghost.api.Entity;
 
 public class BasicEntity<O> implements Entity<O> {
 

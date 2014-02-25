@@ -4,18 +4,19 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core;
+package org.ehony.pojoghost.api;
 
-public interface ConverterRegistry {
+public interface ConverterRegistry
+{
 
     /**
-     * Registers a new type converter
+     * Registers a new type converter.
      *
      * @param from the type to convert from
      * @param to the type to convert to
      * @param converter the type converter to use
      */
-    <A, B> void register(Class<A> from, Class<B> to, Converter<? extends A, ? extends B> converter, Object id);
+    <From, To> void register(Class<From> from, Class<To> to, Converter<? extends From, ? extends To> converter, Object id);
 
     /**
      * Performs a lookup for a given type converter.
@@ -24,19 +25,16 @@ public interface ConverterRegistry {
      * @param to the type to convert to
      * @return the type converter or <tt>null</tt> if not found.
      */
-    <A, B> Converter<A, B> lookup(Class<A> from, Class<B> to, Object id);
+    <From, To> Converter<From, To> lookup(Class<From> from, Class<To> to, Object id);
 
     /**
-     * Sets the injector to be used for creating new instances during type
-     * conversions.
-     *
+     * Sets the injector to be used for creating new instances during type conversions.
      * @param injector the injector
      */
     void setInjector(Injector injector);
 
     /**
-     * Gets the injector
-     *
+     * Gets the injector.
      * @return the injector
      */
     Injector getInjector();

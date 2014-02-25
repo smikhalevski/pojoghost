@@ -4,12 +4,14 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core.impl;
+package org.ehony.pojoghost;
 
 import java.util.*;
-import org.ehony.pojoghost.core.*;
 
-public class DefaultConverterRegistry implements ConverterRegistry {
+import org.ehony.pojoghost.api.*;
+
+public class DefaultConverterRegistry implements ConverterRegistry
+{
 
     private Injector injector;
     private Map<Key, Converter> converters = new HashMap<Key, Converter>();

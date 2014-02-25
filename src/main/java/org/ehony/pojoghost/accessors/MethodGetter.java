@@ -6,9 +6,8 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.api.Getter;
-import org.ehony.pojoghost.core.*;
-import org.ehony.pojoghost.core.impl.BasicBound;
+import org.ehony.pojoghost.api.*;
+import org.ehony.pojoghost.BasicBound;
 
 import java.lang.reflect.Method;
 

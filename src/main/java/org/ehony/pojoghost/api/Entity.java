@@ -4,7 +4,7 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core;
+package org.ehony.pojoghost.api;
 
 import java.io.Serializable;
 
@@ -21,4 +21,6 @@ public interface Entity<Type> extends Serializable
      * @return Instance of {@link Type}.
      */
     Type getObject();
+    
+    boolean isEmpty();
 }

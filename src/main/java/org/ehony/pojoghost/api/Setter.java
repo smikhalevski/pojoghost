@@ -6,8 +6,6 @@
  */
 package org.ehony.pojoghost.api;
 
-import org.ehony.pojoghost.core.*;
-
 /**
  * Abstraction for set accessor mechanism.
  * @param <To> object keeping field accessed by this setter.

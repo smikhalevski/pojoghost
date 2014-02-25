@@ -6,8 +6,6 @@
  */
 package org.ehony.pojoghost.api;
 
-import org.ehony.pojoghost.core.*;
-
 /**
  * Abstraction for get accessor mechanism.
  * @param <From> object keeping field accessed by this getter.

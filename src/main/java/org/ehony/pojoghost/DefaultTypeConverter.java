@@ -4,12 +4,14 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core.impl;
+package org.ehony.pojoghost;
 
 import java.util.*;
-import org.ehony.pojoghost.core.*;
 
-public class DefaultTypeConverter<A, B> implements TypeConverter<A, B> {
+import org.ehony.pojoghost.BasicEntity;
+import org.ehony.pojoghost.api.*;
+
+public class DefaultTypeConverter<A, B> implements Converter<A, B> {
 
     private Class<A> aClass;
     private Class<B> bClass;

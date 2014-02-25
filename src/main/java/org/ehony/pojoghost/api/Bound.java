@@ -4,7 +4,7 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core;
+package org.ehony.pojoghost.api;
 
 import java.lang.reflect.Type;
 import java.util.List;

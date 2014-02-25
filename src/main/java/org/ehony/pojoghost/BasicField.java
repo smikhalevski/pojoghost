@@ -4,10 +4,9 @@
  * │Eh│ony
  * └──┘
  */
-package org.ehony.pojoghost.core.impl;
+package org.ehony.pojoghost;
 
 import org.ehony.pojoghost.api.*;
-import org.ehony.pojoghost.core.*;
 
 public class BasicField<O, T> implements Field<O, T> {
 
