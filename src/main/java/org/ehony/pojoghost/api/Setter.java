@@ -22,7 +22,7 @@ public interface Setter<To, Type>
     void set(Entity<To> to, Entity<Type> value);
 
     /**
-     * Get acceptable type bound of this setter.
+     * Get type of argument that setter accepts.
      * <p>Value argument accepted by {@link #set(Entity, Entity)}
      * entity is type-compliant with bound returned by this method.</p>
      *
