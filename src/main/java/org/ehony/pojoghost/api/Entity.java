@@ -26,7 +26,7 @@ public interface Entity<Type>
 
     /**
      * Returns <code>true</code> if object held by this entity is empty.
-     * <p>Definition of &laquo;empty&raquo; may depend on entity content.</p>
+     * <p>Definition of &laquo;empty&raquo; may depend on entity content and usage context.</p>
      */
     boolean isEmpty();
 }

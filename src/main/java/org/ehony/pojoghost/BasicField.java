@@ -8,7 +8,7 @@ package org.ehony.pojoghost;
 
 import org.ehony.pojoghost.api.*;
 
-public class BasicField<O, T> implements Field<O, T> {
+public class BasicField<O, T> {
 
     private Getter<O, T> getter;
     private Setter<O, T> setter;

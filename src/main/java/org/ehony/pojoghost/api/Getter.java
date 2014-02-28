@@ -16,21 +16,23 @@ public interface Getter<From, Type>
 
     /**
      * Get field proxy for provided object.
-     * <p><b>Important:</b> returned entity may be asynchronous and can
-     * raise exception later on, during {@link Entity#getObject()} invocation.</p>
+     * <p>Returned entity may be asynchronous, so exception may be raised later on,
+     * during {@link Entity#getObject()} invocation.</p>
      *
      * @param from entity to apply getter to.
-     * @return Entity which can access field described by this getter.
+     * @return Proxy to actual field value described by this getter.
      */
     Entity<Type> get(Entity<From> from);
 
     /**
-     * Get type of return value of this getter.
-     * <p>Object encapsulated by {@link #get(Entity) getter}-returned
-     * entity is type-compliant with bound returned by this method.</p>
+     * Detect type of value that getter mechanism returns.
+     * <p>Proxy returned by {@link #get(Entity)} is type-compliant with bound returned by this method.</p>
+     * <p><b>Implementation considerations:</b> omit throwing exceptions if bound cannot be resolved
+     * due to <a href="http://docs.oracle.com/javase/tutorial/java/generics/erasure.html">type erasure</a>
+     * and return {@code null} instead.</p>
      *
-     * @param type class to extract information from.
-     * @return Description of getter return type.
+     * @param type class object to extract information from.
+     * @return Description of value type returned by get mechanism.
      */
     Bound<Type> getReturnBound(Class<? extends From> type);
 }

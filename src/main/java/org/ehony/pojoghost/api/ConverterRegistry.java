@@ -6,6 +6,9 @@
  */
 package org.ehony.pojoghost.api;
 
+/**
+ * Lookup capable dictionary of converters.
+ */
 public interface ConverterRegistry
 {
 

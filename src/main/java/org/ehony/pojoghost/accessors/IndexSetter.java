@@ -6,8 +6,9 @@
  */
 package org.ehony.pojoghost.accessors;
 
+import org.ehony.pojoghost.ReflectionBound;
 import org.ehony.pojoghost.api.*;
-import org.ehony.pojoghost.BasicBound;
+import org.ehony.pojoghost.ReflectionBound;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -46,12 +47,12 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
 
     @SuppressWarnings("unchecked")
     public Bound<Type> getArgumentBound(Class<? extends To> type) {
-        Bound tree = BasicBound.inspect(type);
+        Bound tree = ReflectionBound.inspect(type);
         if (type.isArray()) {
-            return tree.getParameterBounds().get(0);
+            return (Bound<Type>) tree.getBoundsOfGenericParameters().get(0);
         }
         if (List.class.isAssignableFrom(type)) {
-            return tree.findImplemetedBoundOfType(List.class).getParameterBounds().get(0);
+            return (Bound<Type>) tree.findImplementedBoundOfType(List.class).getBoundsOfGenericParameters().get(0);
         }
         return null;
     }

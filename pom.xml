@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
+    <!--<build>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -37,7 +37,7 @@
             </plugins>
         </pluginManagement>
     </build>
-
+-->
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>

@@ -20,7 +20,7 @@ public interface Injector
      * @param type type of object to create.
      * @return A newly created instance.
      */
-    <Type> Type createInstance(Class<Type> type);
+    <T> T createInstance(Class<T> type);
 
     /**
      * Instantiates an instance of the given object type possibly injecting
@@ -30,5 +30,5 @@ public interface Injector
      * @param instance instance of the type to create.
      * @return A newly created instance.
      */
-    <Type> Type createInstance(Class<Type> type, Type instance);
+    <T> T createInstance(Class<T> type, T instance);
 }

@@ -19,4 +19,9 @@ public class BasicEntity<O> implements Entity<O> {
     public O getObject() {
         return object;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return object == null;
+    }
 }

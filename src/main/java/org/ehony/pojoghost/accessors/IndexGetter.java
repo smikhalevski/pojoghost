@@ -34,7 +34,7 @@ public class IndexGetter<From, Type> implements Getter<From, Type>
         }
         if (o instanceof Iterable) {
             if (index < 0) {
-                throw new IndexOutOfBoundsException("Unexpected index: " + index);
+                throw new IndexOutOfBoundsException("Inapplicable index: " + index);
             }
             Iterator<?> iterator = ((Iterable) o).iterator();
             for (int i = 0; i < index - 1; i++) {
@@ -47,12 +47,12 @@ public class IndexGetter<From, Type> implements Getter<From, Type>
 
     @SuppressWarnings("unchecked")
     public Bound<Type> getReturnBound(Class<? extends From> type) {
-        Bound tree = BasicBound.inspect(type);
+        Bound tree = ReflectionBound.inspect(type);
         if (type.isArray()) {
-            return tree.getParameterBounds().get(0);
+            return (Bound<Type>) tree.getBoundsOfGenericParameters().get(0);
         }
         if (Iterable.class.isAssignableFrom(type)) {
-            return tree.findImplemetedBoundOfType(Iterable.class).getParameterBounds().get(0);
+            return (Bound<Type>) tree.findImplementedBoundOfType(Iterable.class).getBoundsOfGenericParameters().get(0);
         }
         return null;
     }

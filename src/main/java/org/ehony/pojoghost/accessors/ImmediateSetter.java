@@ -6,7 +6,8 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.BasicBound;
+import org.ehony.pojoghost.ReflectionBound;
+import org.ehony.pojoghost.ReflectionBound;
 import org.ehony.pojoghost.api.*;
 
 import java.lang.reflect.Field;
@@ -46,6 +47,6 @@ public class ImmediateSetter<To, Type> implements Setter<To, Type>
 
     @SuppressWarnings("unchecked")
     public Bound<Type> getArgumentBound(Class<? extends To> type) {
-        return BasicBound.inspect(getField(type).getGenericType());
+        return ReflectionBound.inspect(getField(type).getGenericType());
     }
 }

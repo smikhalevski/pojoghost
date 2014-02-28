@@ -6,15 +6,6 @@
  */
 package org.ehony.pojoghost;
 
-import org.ehony.pojoghost.api.*;
-import org.junit.Test;
-import org.ehony.pojoghost.accessors.ImmediateGetter;
-import org.ehony.pojoghost.accessors.ImmediateSetter;
-import org.ehony.pojoghost.api.Converter;
-import org.ehony.pojoghost.api.Field;
-import org.ehony.pojoghost.api.ConverterRegistry;
-import org.ehony.pojoghost.api.TypeConverter;
-
 public class GhostTest {
     
     public static class Foo {
@@ -27,7 +18,7 @@ public class GhostTest {
         public Integer b;
     }
 
-    public class StringToIntegerConverter implements Converter<String, Integer> {
+    /*public class StringToIntegerConverter implements Converter<String, Integer> {
 
         public Integer convert(String from) {
             return convert(from, 0);
@@ -55,7 +46,7 @@ public class GhostTest {
         registry.register(Foo.class, Bar.class, fooToBarConverter, null);
 
         System.out.println("Bar#b = " + registry.lookup(Foo.class, Bar.class, null).convert(new Foo(), new Bar()).b);
-    }
+    }*/
 /*
     @Test
     public void testName()

@@ -7,27 +7,30 @@
 package org.ehony.pojoghost.api;
 
 /**
- * Abstraction for set accessor mechanism.
- * @param <To> object keeping field accessed by this setter.
- * @param <Type> type of accepted object.
+ * Abstraction of field value assign mechanism.
+ * @param <To> type of object keeping field accessed by this setter.
+ * @param <Type> type of object accepted by set mechanism.
  */
 public interface Setter<To, Type>
 {
 
     /**
-     * Immediately set field value.
+     * Set field value.
      * @param to object keeping field.
      * @param value value to set to this field.
      */
     void set(Entity<To> to, Entity<Type> value);
 
     /**
-     * Get type of argument that setter accepts.
-     * <p>Value argument accepted by {@link #set(Entity, Entity)}
-     * entity is type-compliant with bound returned by this method.</p>
+     * Detect type of argument that setter mechanism accepts.
+     * <p>Argument <code>value</code> accepted by {@link #set(Entity, Entity) set(to, value)}
+     * is type-compliant with bound returned by this method.</p>
+     * <p><b>Implementation considerations:</b> omit throwing exceptions if bound cannot be resolved
+     * due to <a href="http://docs.oracle.com/javase/tutorial/java/generics/erasure.html">type erasure</a>
+     * and return {@code null} instead.</p>
      *
-     * @param type class to extract information from.
-     * @return Description of type accepted by set method.
+     * @param type class object to extract information from.
+     * @return Description of value type accepted by set mechanism.
      */
     Bound<Type> getArgumentBound(Class<? extends To> type);
 }
