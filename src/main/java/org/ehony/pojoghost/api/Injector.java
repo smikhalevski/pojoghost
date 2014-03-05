@@ -14,7 +14,7 @@ public interface Injector
 {
 
     /**
-     * Instantiates an instance of the given type possibly injecting values
+     * Instantiate an instance of the given type possibly injecting values
      * into the object in the process.
      *
      * @param type type of object to create.
@@ -23,7 +23,7 @@ public interface Injector
     <T> T createInstance(Class<T> type);
 
     /**
-     * Instantiates an instance of the given object type possibly injecting
+     * Instantiate an instance of the given object type possibly injecting
      * values into the object in the process.
      *
      * @param type type of object to create.
