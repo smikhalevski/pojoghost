@@ -47,6 +47,6 @@ public class ImmediateSetter<To, Type> implements Setter<To, Type>
 
     @SuppressWarnings("unchecked")
     public Bound<Type> getArgumentBound(Class<? extends To> type) {
-        return ReflectionBound.inspect(getField(type).getGenericType());
+        return new ReflectionBound<Type>(getField(type).getGenericType());
     }
 }
