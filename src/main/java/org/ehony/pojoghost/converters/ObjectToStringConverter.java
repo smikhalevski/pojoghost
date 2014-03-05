@@ -8,20 +8,20 @@ package org.ehony.pojoghost.converters;
 
 import org.ehony.pojoghost.api.Converter;
 
-public class ObjectToStringConverter implements Converter<Object, String>
+public class ObjectToStringConverter //implements Converter<Object, String>
 {
 
-    @Override
+//    @Override
     public String convert(Object o) {
         return String.valueOf(o);
     }
 
-    @Override
+//    @Override
     public String convert(Object o, String s) {
         return convert(o);
     }
 
-    @Override
+//    @Override
     public boolean canConvert(Class<?> from, Class<? extends String> to) {
         return true;
     }

@@ -4,7 +4,7 @@ import org.ehony.pojoghost.api.Converter;
 
 import java.text.DecimalFormat;
 
-public class NumberToStringConverter implements Converter<Number, String>
+public class NumberToStringConverter //implements Converter<Number, String>
 {
 
     private DecimalFormat format;
@@ -13,7 +13,7 @@ public class NumberToStringConverter implements Converter<Number, String>
         this.format = format;
     }
 
-    @Override
+//    @Override
     public String convert(Number number) {
         if (format != null) {
             return format.format(number.doubleValue());
@@ -22,12 +22,12 @@ public class NumberToStringConverter implements Converter<Number, String>
         }
     }
 
-    @Override
+//    @Override
     public String convert(Number number, String s) {
         return convert(number);
     }
 
-    @Override
+//    @Override
     public boolean canConvert(Class<? extends Number> from, Class<? extends String> to) {
         return true;
     }

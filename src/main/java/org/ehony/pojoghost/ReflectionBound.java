@@ -14,11 +14,10 @@ import java.util.*;
 public class ReflectionBound<C> implements Bound<C>
 {
 
-    private Type rawType;
-    private Class<?> type;
-    private List<Bound>
-            parameters = new ArrayList<Bound>(), // Genetic type parameters.
-            parents = new ArrayList<Bound>(); // Extended superclasses and implemented interfaces.
+    private Type type;
+    private List<Bound<?>>
+            parameters = new ArrayList<Bound<?>>(), // Genetic type parameters.
+            parents = new ArrayList<Bound<?>>(); // Extended superclasses and implemented interfaces.
 
     private ReflectionBound() {
     }
@@ -27,6 +26,10 @@ public class ReflectionBound<C> implements Bound<C>
         inspect(type, this, new HashMap<String, Bound>(), new HashMap<Type, Bound>());
     }
 
+    
+    
+    
+    
     private static ReflectionBound createBound(Type type, ReflectionBound target) {
         if (target == null) {
             target = new ReflectionBound();
@@ -35,68 +38,92 @@ public class ReflectionBound<C> implements Bound<C>
         return target;
     }
     
+    
+    
+    
+    
+    
+    
+    
     /**
      * Inspect provided type and retrieve its structure.
      * @param type type to inspect.
      * @param target target bound to populate with data.
      * @param aliases cache of generic variable declarations accessible for given type.
      * @param cache cache of already parsed classes.
-     * @return Cached or <code>target</code> bound. 
+     * @return Cached or <code>target</code> bound.
      */
     private static Bound inspect(Type type, ReflectionBound target, Map<String, Bound> aliases, Map<Type, Bound> cache) {
-        // If type was already inspected then return.
+        // Return immediately if type was already inspected and cached.
         if (cache.containsKey(type)) {
             return cache.get(type);
         }
         
+        
+        
+        
+        
         if (type instanceof Class) {
+            target.type = type;
+            // Building context-wide cache for class object.
+            Map<Type, Bound> context = new HashMap<Type, Bound>(cache);
+            context.put(type, target);
+            
             Class<?> t = (Class) type;
-            target = createBound(type, target);
-            target.type = t;
-            
-            Map<Type, Bound> parentsOrSelf = new HashMap<Type, Bound>(cache);
-            parentsOrSelf.put(t, target);
-            
             Map<String, Bound> classParams = new HashMap<String, Bound>();
             for (TypeVariable param : t.getTypeParameters()) {
                 String name = param.getName();
                 Bound paramBound = aliases.get(name);
                 if (paramBound == null) {
-                    paramBound = inspect(param, new ReflectionBound(), aliases, parentsOrSelf);
+                    paramBound = inspect(param, new ReflectionBound(), aliases, context);
                 }
                 classParams.put(name, paramBound);
                 target.parameters.add(paramBound);
             }
             
+            
+            
+            
+            
             Type superType = t.getGenericSuperclass();
             if (superType != null) {
-                target.parents.add(inspect(superType, new ReflectionBound(), classParams, parentsOrSelf));
+                target.parents.add(inspect(superType, new ReflectionBound(), classParams, context));
             }
             for (Type implemetedInterface : t.getGenericInterfaces()) {
-                target.parents.add(inspect(implemetedInterface, new ReflectionBound(), classParams, parentsOrSelf));
+                target.parents.add(inspect(implemetedInterface, new ReflectionBound(), classParams, context));
             }
             return target;
+            
         }
         
-        // int[], Character[], etc.
+        
+        
+        
+        // <editor-fold name="A[]">
         if (type instanceof GenericArrayType) {
-            target = createBound(type, target);
             target.type = Array.class;
             // Get type of array element, must not be empty.
-            Type t = ((GenericArrayType) type).getGenericComponentType();
-            target.parameters.add(inspect(t, null, aliases, cache));
+            Type t = ((GenericArrayType) type).getGenericComponentType(); // A
+            target.parameters.add(inspect(t, new ReflectionBound(), aliases, cache));
             return target;
         }
-        
-        // T extends Class1 & Class2
+        // </editor-fold>
+            
+            
+            
+            
+            
+            
+            
+        // <editor-fold name="A extends B & C">
         if (type instanceof TypeVariable) {
             TypeVariable t = (TypeVariable) type;
-            String name = t.getName(); // T
+            String name = t.getName(); // A
             // If this variable was already inspected then return.
             if (aliases.containsKey(name)) {
                 return aliases.get(name);
             }
-            Type[] bounds = t.getBounds(); // [Class1, Class2]
+            Type[] bounds = t.getBounds(); // [B, C]
             if (bounds.length > 1) {
                 target = createBound(type, target);
                 for (Type bound : bounds) {
@@ -114,8 +141,11 @@ public class ReflectionBound<C> implements Bound<C>
                 }
             }
         }
+        // </editor-fold>
         
         // Inspect: ?, ? extends Number, ? super Integer, etc.
+        // <editor-fold name="">
+        // </editor-fold>
         if (type instanceof WildcardType) {
             WildcardType t = (WildcardType) type;
             Type[] bounds = t.getUpperBounds();
@@ -137,7 +167,9 @@ public class ReflectionBound<C> implements Bound<C>
             }
         }
         
-        // Inspect: AnotherClass<...>, 
+        // Inspect: AnotherClass<...>
+        // <editor-fold name="">
+        // </editor-fold>
         if (type instanceof ParameterizedType) {
             ParameterizedType t = (ParameterizedType) type;
             
@@ -172,31 +204,48 @@ public class ReflectionBound<C> implements Bound<C>
     }
 
     @Override
-    public List<Bound> getBoundsOfGenericParameters() {
+    public List<Bound<?>> getParameters() {
         return parameters;
     }
 
     @Override
-    public List<Bound> getImplementedBounds() {
+    public List<Bound<?>> getInterfaces() {
         return parents;
     }
 
     @Override
     public <T> Bound<T> findImplementedBoundOfType(Class<T> type) {
-        return findImplementedBoundOfType(type, new ArrayList<Bound>());
+        return findImplementedBoundOfType(type, new ArrayList<Bound<?>>());
     }
 
-    private <T> Bound<T> findImplementedBoundOfType(Class<T> type, List<Bound> ancestors) {
+    private <T> Bound<T> findImplementedBoundOfType(Class<T> type, List<Bound<?>> ancestors) {
         for (Bound ancestor : ancestors) {
             if (!type.isAssignableFrom(ancestor.getType())) {
                 continue;
             }
-            Bound t = findImplementedBoundOfType(type, ancestor.getImplementedBounds());
+            Bound t = findImplementedBoundOfType(type, ancestor.getInterfaces());
             if (t instanceof ReflectionBound) {
                 return t;
             }
             return ancestor;
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        if (type != null) {
+            out.append(type.getSimpleName());
+        } else {
+            out.append(rawType.getClass().getSimpleName());
+        }
+        if (!parameters.isEmpty()) {
+            out.append('<').append(parameters).append('>');
+        }
+        if (!parents.isEmpty()) {
+            out.append(" extends ").append(parents);
+        }
+        return out.toString();
     }
 }

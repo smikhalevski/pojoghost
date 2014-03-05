@@ -29,13 +29,14 @@ public interface Bound<Type> {
 
     /**
      * Get bounds of generic parameters specified for this bound.
+     * 
      */
-    List<Bound> getBoundsOfGenericParameters();
+    List<Bound<?>> getParameters();
 
     /**
      * Get bounds directly implemented or extended by this bound.
      */
-    List<Bound> getImplementedBounds();
+    List<Bound<?>> getInterfaces();
 
     /**
      * Get bound for interface of super class implemented or extended by this bound.
