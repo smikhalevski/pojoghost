@@ -50,7 +50,7 @@ public class MethodGetter<O, T> implements Getter<O, T>
     }
 
     @SuppressWarnings("unchecked")
-    public Bound<T> getReturnBound(Class<? extends O> type) {
-        return new ReflectionBound<T>(getMethod(type).getGenericReturnType());
+    public Bound getReturnBound(Class<? extends O> type) {
+        return new ReflectionBound(getMethod(type).getGenericReturnType());
     }
 }

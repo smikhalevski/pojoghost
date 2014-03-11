@@ -32,7 +32,7 @@ public class SafeGetter<From, Type> implements Getter<From, Type>
     }
 
     @Override
-    public Bound<Type> getReturnBound(Class<? extends From> type) {
+    public Bound getReturnBound(Class<? extends From> type) {
         return getter.getReturnBound(type);
     }
 }

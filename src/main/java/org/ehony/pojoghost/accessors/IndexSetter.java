@@ -45,13 +45,13 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
     }
 
     @SuppressWarnings("unchecked")
-    public Bound<Type> getArgumentBound(Class<? extends To> type) {
-        Bound b = new ReflectionBound<Type>(type);
+    public Bound getArgumentBound(Class<? extends To> type) {
+        Bound b = new ReflectionBound(type);
         if (type.isArray()) {
-            return (Bound<Type>) b.getParameters().get(0);
+            return b.getParameters().get(0);
         }
         if (List.class.isAssignableFrom(type)) {
-            return (Bound<Type>) b.findImplementedBoundOfType(List.class).getParameters().get(0);
+            return b.findImplementedBoundOfType(List.class).getParameters().get(0);
         }
         return null;
     }

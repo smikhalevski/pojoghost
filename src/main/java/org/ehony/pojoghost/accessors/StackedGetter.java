@@ -39,7 +39,7 @@ public class StackedGetter<From, Type> implements Getter<From, Type>
     }
 
     @SuppressWarnings("unchecked")
-    public Bound<Type> getReturnBound(Class<? extends From> type) {
+    public Bound getReturnBound(Class<? extends From> type) {
         Throwable cause = null;
         for (Getter getter : getters) {
             try {

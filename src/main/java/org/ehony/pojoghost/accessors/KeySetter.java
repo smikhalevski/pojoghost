@@ -30,7 +30,7 @@ public class KeySetter<To extends Map, Type> implements Setter<To, Type>
     }
 
     @SuppressWarnings("unchecked")
-    public Bound<Type> getArgumentBound(Class<? extends To> type) {
-        return (Bound<Type>) new ReflectionBound(type).findImplementedBoundOfType(Map.class).getParameters().get(1);
+    public Bound getArgumentBound(Class<? extends To> type) {
+        return new ReflectionBound(type).findImplementedBoundOfType(Map.class).getParameters().get(1);
     }
 }

@@ -46,13 +46,13 @@ public class IndexGetter<From, Type> implements Getter<From, Type>
     }
 
     @SuppressWarnings("unchecked")
-    public Bound<Type> getReturnBound(Class<? extends From> type) {
-        Bound b = new ReflectionBound<Type>(type);
+    public Bound getReturnBound(Class<? extends From> type) {
+        Bound b = new ReflectionBound(type);
         if (type.isArray()) {
-            return (Bound<Type>) b.getParameters().get(0);
+            return b.getParameters().get(0);
         }
         if (Iterable.class.isAssignableFrom(type)) {
-            return (Bound<Type>) b.findImplementedBoundOfType(Iterable.class).getParameters().get(0);
+            return b.findImplementedBoundOfType(Iterable.class).getParameters().get(0);
         }
         return null;
     }

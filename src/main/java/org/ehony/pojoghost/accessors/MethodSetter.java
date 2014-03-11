@@ -62,7 +62,7 @@ public class MethodSetter<O, T> implements Setter<O, T>
         }
     }
 
-    public Bound<T> getArgumentBound(Class<? extends O> type) {
-        return new ReflectionBound<T>(getMethod(type).getGenericReturnType());
+    public Bound getArgumentBound(Class<? extends O> type) {
+        return new ReflectionBound(getMethod(type).getGenericReturnType());
     }
 }

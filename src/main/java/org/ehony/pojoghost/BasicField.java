@@ -51,14 +51,14 @@ public class BasicField<O, T> {
         }
     }
 
-    public Bound<T> getArgumentBound() {
+    public Bound getArgumentBound() {
         if (canSet()) {
 //            return setter.getArgumentBound(getParent().getObjectType());
         }
         throw new UnsupportedOperationException();
     }
 
-    public Bound<T> getReturnBound() {
+    public Bound getReturnBound() {
         if (canSet()) {
 //            return getter.getReturnBound(getParent().getObjectType());
         }

@@ -36,7 +36,7 @@ public class StackedSetter<To, Type> implements Setter<To, Type>
     }
 
     @SuppressWarnings("unchecked")
-    public Bound<Type> getArgumentBound(Class<? extends To> type) {
+    public Bound getArgumentBound(Class<? extends To> type) {
         Throwable cause = null;
         for (Setter setter : setters) {
             try {

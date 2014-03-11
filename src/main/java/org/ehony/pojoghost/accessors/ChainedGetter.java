@@ -47,7 +47,7 @@ public class ChainedGetter<From, Type> implements Getter<From, Type>
      * @return Description of latest getter return type or <tt>null</tt> if no getters were provided.
      */
     @SuppressWarnings("unchecked")
-    public Bound<Type> getReturnBound(Class<? extends From> type) {
+    public Bound getReturnBound(Class<? extends From> type) {
         Class t = type;
         int i = getters.size();
         for (Getter getter : getters) {
@@ -55,7 +55,7 @@ public class ChainedGetter<From, Type> implements Getter<From, Type>
             if (--i == 0) {
                 return bound;
             }
-            t = bound.getType();
+//            t = bound.getType();
         }
         return null;
     }

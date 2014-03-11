@@ -34,5 +34,5 @@ public interface Getter<From, Type>
      * @param type class object to extract information from.
      * @return Description of value type returned by get mechanism.
      */
-    Bound<Type> getReturnBound(Class<? extends From> type);
+    Bound getReturnBound(Class<? extends From> type);
 }

@@ -32,7 +32,7 @@ public class SafeSetter<To, Type> implements Setter<To, Type>
     }
 
     @Override
-    public Bound<Type> getArgumentBound(Class<? extends To> type) {
+    public Bound getArgumentBound(Class<? extends To> type) {
         return setter.getArgumentBound(type);
     }
 }

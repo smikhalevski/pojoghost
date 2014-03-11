@@ -32,5 +32,5 @@ public interface Setter<To, Type>
      * @param type class object to extract information from.
      * @return Description of value type accepted by set mechanism.
      */
-    Bound<Type> getArgumentBound(Class<? extends To> type);
+    Bound getArgumentBound(Class<? extends To> type);
 }
