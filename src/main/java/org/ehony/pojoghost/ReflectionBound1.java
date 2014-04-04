@@ -11,7 +11,7 @@ import org.ehony.pojoghost.api.Bound;
 import java.lang.reflect.*;
 import java.util.*;
 
-public class ReflectionBound implements Bound
+public class ReflectionBound1 implements Bound
 {
 
     private Type type;
@@ -20,76 +20,75 @@ public class ReflectionBound implements Bound
             parameters = new ArrayList<Bound>(), // Genetic type parameters.
             interfaces = new ArrayList<Bound>(); // Implemented interfaces.
 
-    private ReflectionBound() {
+    private ReflectionBound1() {
     }
 
-    public ReflectionBound(Type type) {
-        inspect(type, this, new HashMap<String, Bound>(), new HashMap<Type, Bound>());
+    public ReflectionBound1(Type type) {
+        inspect(type, new HashMap<String, Bound>(), new HashMap<Type, Bound>());
     }
-
+    
+    
     /**
      * Inspect provided type and retrieve its structure.
      * @param type type to inspect.
-     * @param target target bound to save data in.
      * @param variables cache of generic variable declarations accessible for given type.
      * @param cache cache of already parsed raw types.
      * @return Cached or <code>target</code> bound.
      */
-    private static Bound inspect(Type type, ReflectionBound target, Map<String, Bound> variables, Map<Type, Bound> cache) {
+    private static Bound inspect(Type type, Map<String, Bound> variables, Map<Type, Bound> cache) {
+        
+        
+        
         if (cache.containsKey(type)) {
-            // Return immediately if type was already inspected and cached.
             return cache.get(type);
-        } else {
-            // Otherwise cache type description and proceed with its enrichment.
-            cache.put(type, target);
         }
-
-        if (target == null) {
-            target = new ReflectionBound();
-        }
-
-        target.type = type;
-
-        // <editor-fold desc="Inspection of Object.class">
+        ReflectionBound1 rb = new ReflectionBound1();
+        rb.type = type;
+        
+        
         if (Object.class == type) {
-            return target;
+            return rb;
         }
-        // </editor-fold>
 
-        // <editor-fold desc="Inspection of A.class">
+        
+        
+        
+        
         if (type instanceof Class) {
-            Class c = (Class) type;
+            Class clazz = (Class) type;
             Map<String, Bound> context = new HashMap<String, Bound>();
-            for (TypeVariable p : c.getTypeParameters()) {
-                String name = p.getName();
-                Bound b = variables.get(name);
-                if (b == null) {
-                    b = inspect(p, null, variables, cache);
-                }
-                context.put(name, b);
-                target.parameters.add(b);
-            }
-            Type superclass = c.getGenericSuperclass();
+//            for (TypeVariable p : clazz.getTypeParameters()) {
+//                String name = p.getName();
+//                Bound b = variables.get(name);
+//                if (b == null) {
+//                    b = inspect(p, variables, cache);
+//                }
+//                context.put(name, b);
+//                rb.parameters.add(b);
+//            }
+            Type superclass = clazz.getGenericSuperclass();
             if (superclass != null) {
-                target.parent = inspect(superclass, null, context, cache);
+                rb.parent = inspect(superclass, context, cache);
             }
-            for (Type t : c.getGenericInterfaces()) {
-                target.interfaces.add(inspect(t, null, context, cache));
+            for (Type t : clazz.getGenericInterfaces()) {
+                rb.interfaces.add(inspect(t, context, cache));
             }
-            return target;
+            return rb;
         }
-        // </editor-fold>
 
-        // <editor-fold desc="Inspection of A[]">
+        
+        
+        
+        
+        
+        
         if (type instanceof GenericArrayType) {
             // Get type of array element, must not be empty.
             Type t = ((GenericArrayType) type).getGenericComponentType(); // A
-            target.parameters.add(inspect(t, null, variables, cache));
-            return target;
+            rb.parameters.add(inspect(t, variables, cache));
+            return rb;
         }
-        // </editor-fold>
 
-        // <editor-fold desc="Inspection of A extends B & C">
         if (type instanceof TypeVariable) {
             TypeVariable v = (TypeVariable) type;
             String name = v.getName(); // A
@@ -100,57 +99,53 @@ public class ReflectionBound implements Bound
             Type[] bounds = v.getBounds(); // [B, C]
             if (bounds.length > 1) {
                 for (Type t : bounds) {
-                    Bound b = inspect(t, null, variables, cache);
+                    Bound b = inspect(t, variables, cache);
                     if (t instanceof Class) {
-                        target.parent = b;
+                        rb.parent = b;
                     } else {
-                        target.interfaces.add(b);
+                        rb.interfaces.add(b);
                     }
                 }
-                return target;
+                return rb;
             } else {
                 if (bounds.length == 0) {
                     // Any type may be provided to parameter with no upper bounds specified.
-                    target.type = Object.class;
-                    return target;
+                    rb.type = Object.class;
+                    return rb;
                 } else {
-                    return inspect(bounds[0], null, variables, cache);
+                    return inspect(bounds[0], variables, cache);
                 }
             }
         }
-        // </editor-fold>
 
-        // <editor-fold desc="Inspection of ? extends A">
         if (type instanceof WildcardType) {
             WildcardType w = (WildcardType) type;
             Type[] bounds = w.getUpperBounds();
             if (bounds.length > 1) {
                 for (Type t : bounds) {
-                    Bound b = inspect(t, null, variables, cache);
+                    Bound b = inspect(t, variables, cache);
                     if (t instanceof Class) {
-                        target.parent = b;
+                        rb.parent = b;
                     } else {
-                        target.interfaces.add(b);
+                        rb.interfaces.add(b);
                     }
                 }
-                return target;
+                return rb;
             } else {
                 if (bounds.length == 0) {
                     // Any type may be provided to parameter with no upper bounds specified.
-                    target.type = Object.class;
-                    return target;
+                    rb.type = Object.class;
+                    return rb;
                 } else {
-                    return inspect(bounds[0], null, variables, cache);
+                    return inspect(bounds[0], variables, cache);
                 }
             }
         }
-        // </editor-fold>
 
-        // <editor-fold desc="Inspection of A<...>">
         if (type instanceof ParameterizedType) {
             ParameterizedType p = (ParameterizedType) type;
             Class c = (Class) p.getRawType();
-            target.type = c;
+            rb.type = c;
             
             Type[] parameters = p.getActualTypeArguments(); // Actual content of <...>.
             TypeVariable[] naming = c.getTypeParameters(); // Names of class parameters from class definition.
@@ -160,11 +155,10 @@ public class ReflectionBound implements Bound
             // Inspect parameters of this parameterized class.
             // Array of actual parameters and their namings are parallel.
             for (int i = 0; i < parameters.length; i++) {
-                context.put(naming[i].getName(), inspect(parameters[i], null, variables, cache));
+                context.put(naming[i].getName(), inspect(parameters[i], variables, cache));
             }
-            return inspect(c, target, context, cache);
+            return inspect(c, context, cache);
         }
-        // </editor-fold>
         
         throw new IllegalArgumentException("Unexpected type.");
     }

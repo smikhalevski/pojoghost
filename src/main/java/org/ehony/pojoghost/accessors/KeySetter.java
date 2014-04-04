@@ -6,7 +6,7 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.ReflectionBound;
+import org.ehony.pojoghost.ReflectionBound1;
 import org.ehony.pojoghost.api.*;
 
 import java.util.Map;
@@ -31,6 +31,6 @@ public class KeySetter<To extends Map, Type> implements Setter<To, Type>
 
     @SuppressWarnings("unchecked")
     public Bound getArgumentBound(Class<? extends To> type) {
-        return new ReflectionBound(type).findImplementedBoundOfType(Map.class).getParameters().get(1);
+        return new ReflectionBound1(type).findImplementedBoundOfType(Map.class).getParameters().get(1);
     }
 }

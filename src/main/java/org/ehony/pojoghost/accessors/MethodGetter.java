@@ -6,9 +6,8 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.ReflectionBound;
+import org.ehony.pojoghost.ReflectionBound1;
 import org.ehony.pojoghost.api.*;
-import org.ehony.pojoghost.ReflectionBound;
 
 import java.lang.reflect.Method;
 
@@ -51,6 +50,6 @@ public class MethodGetter<O, T> implements Getter<O, T>
 
     @SuppressWarnings("unchecked")
     public Bound getReturnBound(Class<? extends O> type) {
-        return new ReflectionBound(getMethod(type).getGenericReturnType());
+        return new ReflectionBound1(getMethod(type).getGenericReturnType());
     }
 }

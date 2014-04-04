@@ -6,7 +6,7 @@
  */
 package org.ehony.pojoghost.accessors;
 
-import org.ehony.pojoghost.ReflectionBound;
+import org.ehony.pojoghost.ReflectionBound1;
 import org.ehony.pojoghost.api.*;
 
 import java.lang.reflect.Array;
@@ -46,7 +46,7 @@ public class IndexSetter<To, Type> implements Setter<To, Type>
 
     @SuppressWarnings("unchecked")
     public Bound getArgumentBound(Class<? extends To> type) {
-        Bound b = new ReflectionBound(type);
+        Bound b = new ReflectionBound1(type);
         if (type.isArray()) {
             return b.getParameters().get(0);
         }

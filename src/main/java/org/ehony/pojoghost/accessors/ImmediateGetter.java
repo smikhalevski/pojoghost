@@ -47,6 +47,6 @@ public class ImmediateGetter<From, Type> implements Getter<From, Type>
 
     @SuppressWarnings("unchecked")
     public Bound getReturnBound(Class<? extends From> type) {
-        return new ReflectionBound(getField(type).getGenericType());
+        return new ReflectionBound1(getField(type).getGenericType());
     }
 }

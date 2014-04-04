@@ -31,6 +31,6 @@ public class KeyGetter<From extends Map, Type> implements Getter<From, Type>
 
     @SuppressWarnings("unchecked")
     public Bound getReturnBound(Class<? extends From> type) {
-        return new ReflectionBound(type).findImplementedBoundOfType(Map.class).getParameters().get(1);
+        return new ReflectionBound1(type).findImplementedBoundOfType(Map.class).getParameters().get(1);
     }
 }

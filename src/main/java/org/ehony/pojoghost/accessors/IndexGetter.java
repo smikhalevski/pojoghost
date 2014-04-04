@@ -47,7 +47,7 @@ public class IndexGetter<From, Type> implements Getter<From, Type>
 
     @SuppressWarnings("unchecked")
     public Bound getReturnBound(Class<? extends From> type) {
-        Bound b = new ReflectionBound(type);
+        Bound b = new ReflectionBound1(type);
         if (type.isArray()) {
             return b.getParameters().get(0);
         }
