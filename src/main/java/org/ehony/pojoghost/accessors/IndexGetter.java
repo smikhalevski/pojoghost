@@ -8,6 +8,7 @@ package org.ehony.pojoghost.accessors;
 
 import org.ehony.pojoghost.*;
 import org.ehony.pojoghost.api.*;
+import org.ehony.pojoghost.api.Bound;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;

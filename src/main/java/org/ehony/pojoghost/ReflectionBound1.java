@@ -84,19 +84,19 @@ public class ReflectionBound1 implements Bound
         
         if (type instanceof GenericArrayType) {
             // Get type of array element, must not be empty.
-            Type t = ((GenericArrayType) type).getGenericComponentType(); // A
+            Type t = ((GenericArrayType) type).getGenericComponentType(); // B3
             rb.parameters.add(inspect(t, variables, cache));
             return rb;
         }
 
         if (type instanceof TypeVariable) {
             TypeVariable v = (TypeVariable) type;
-            String name = v.getName(); // A
+            String name = v.getName(); // B3
             // If this variable was already inspected then return.
             if (variables.containsKey(name)) {
                 return variables.get(name);
             }
-            Type[] bounds = v.getBounds(); // [B, C]
+            Type[] bounds = v.getBounds(); // [B, A3]
             if (bounds.length > 1) {
                 for (Type t : bounds) {
                     Bound b = inspect(t, variables, cache);

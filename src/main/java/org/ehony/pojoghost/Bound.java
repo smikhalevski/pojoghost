@@ -1,172 +1,265 @@
+/*
+ * ┌──┐
+ * │  │
+ * │Eh│ony
+ * └──┘
+ */
 package org.ehony.pojoghost;
 
-import java.beans.Introspector;
 import java.lang.reflect.*;
 import java.util.*;
 
 public class Bound
 {
 
+    /**
+     * Actual type of this bound.
+     */
     private Type definition;
-    private String name;
+    /**
+     * Class associated with this bound.
+     */
     private Class<?> type;
     private Bound parent;
     private Bound superclass;
     private Set<Bound> interfaces = new HashSet<Bound>();
     private List<Bound> parameters = new ArrayList<Bound>();
+    /**
+     * Raw information on expected and received type parameters.
+     */
+    private List<GenericParameter> genericParameters = new ArrayList<GenericParameter>();
 
+    private static class GenericParameter
+    {
 
-    protected Bound copy() {
-        Bound b = new Bound();
-        b.definition = definition;
-        b.name = name;
-        b.type = type;
-        b.parent = parent;
-        b.superclass = superclass;
-        b.interfaces = interfaces;
-        b.parameters = parameters;
-        return b;
-    }
+        public Type expected, received;
 
-    public static Bound traverse(Bound parent, Type type) {
-        if (type instanceof Class) {
-            return traverse(parent, (Class) type);
-        }
-        if (type instanceof ParameterizedType) {
-            return traverse(parent, (ParameterizedType) type);
-        }
-        if (type instanceof TypeVariable) {
-            return traverse(parent, (TypeVariable) type);
-        }
-        if (type instanceof WildcardType) {
-            return traverse(parent, (WildcardType) type);
-        }
-        if (type instanceof GenericArrayType) {
-            return traverse(parent, (GenericArrayType) type);
-        }
-        return null;
-    }
-
-
-    private static Bound traverse(Bound parent, Class<?> type) {
-        for (Bound b = parent; b != null; b = b.parent) {
-            if (type == b.type) {
-                b = b.copy();
-                b.parent = parent;
-                return b;
+        private GenericParameter(Type type) {
+            if (type == null) {
+                throw new NullPointerException("Expected generic parameter cannot be empty.");
             }
+            expected = type;
         }
-        Bound b = traverse(null, type, type.getTypeParameters());
-        b.parent = parent;
-        return b;
     }
 
-    private static Bound traverse(Bound parent, ParameterizedType type) {
-        Bound b = traverse(parent, (Class) type.getRawType(), type.getActualTypeArguments());
-        b.definition = type;
-        return b;
+    /**
+     * Get raw definition that bound represents.
+     */
+    public Type getDefinition() {
+        return definition;
     }
 
-    private static Bound traverse(Bound parent, GenericArrayType type) {
+    /**
+     * Returns <code>true</code> if this bound represents composition of classes
+     * and thou does not have any explicit reference {@link Class}.
+     */
+    public boolean isComposition() {
+        return type == null && !(superclass == null && interfaces.isEmpty());
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>Can be {@code null} for bounds describing composition of classes.</p>
+     * @see #isComposition()
+     */
+    public Class<?> getType() {
+        return type;
+    }
+
+    /**
+     * Bound holding this bound as a child.
+     * <p>Bounds can be recursive: <code>A.superclass == B</code> but <code>B</code>
+     * is not necessarily points to <code>A</code> as a parent.</p>
+     */
+    public Bound getParent() {
+        return parent;
+    }
+
+    /**
+     * Get list of bounds representing actual generic parameters of provided
+     * to parameterised type.
+     */
+    public List<Bound> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Get bound of extended superclass.
+     */
+    public Bound getSuperclass() {
+        return superclass;
+    }
+
+    /**
+     * Get bounds of explicitly implemented interfaces.
+     */
+    public Set<Bound> getInterfaces() {
+        return interfaces;
+    }
+
+    /**
+     * Inserts data stored in {@link Class} object into bound
+     * omitting generic parameter resolution.
+     */
+    private static void populateClassBound(Bound bound, Class<?> type) {
+        bound.type = type;
+        bound.definition = type;
+        for (Type t : type.getTypeParameters()) {
+            bound.genericParameters.add(new GenericParameter(t));
+        }
+        bound.superclass = traverse(bound, type.getGenericSuperclass());
+        for (Type t : type.getGenericInterfaces()) {
+            bound.interfaces.add(traverse(bound, t));
+        }
+    }
+
+    /**
+     * Inserts data stored in {@link ParameterizedType} object into bound
+     * omitting generic parameter resolution.
+     */
+    private static void populateParameterisedBound(Bound bound, ParameterizedType type) {
+        // Explicit cast to Class can be done because getRawType()
+        // returns the type representing the class or interface that
+        // declared type of parameterised type.
+        populateClassBound(bound, (Class) type.getRawType());
+        int i = 0;
+        for (Type t : type.getActualTypeArguments()) {
+            bound.genericParameters.get(i++).received = t;
+        }
+        bound.definition = type;
+    }
+
+    /**
+     * Returns resolved bound for {@link GenericArrayType}.
+     */
+    private static Bound traverseGenericArrayBound(Bound parent, GenericArrayType type) {
         Bound b = traverse(parent, type.getGenericComponentType());
         b.definition = type;
-        return b;
-    }
-
-    private static Bound traverse(Bound parent, Class<?> type, Type[] parameters) {
-        Bound b = new Bound();
-        b.definition = type;
-        b.type = type;
         b.parent = parent;
-        TypeVariable<?>[] variables = type.getTypeParameters();
-        int i = 0;
-        for (Type t : parameters) {
-            Bound bound = traverse(b, t);
-            if (variables[i++] instanceof TypeVariable) {
-                bound.name = ((TypeVariable) variables[i-1]).getName();
-            }
-            b.parameters.add(bound);
-        }
-        b.superclass = traverse(b, type.getGenericSuperclass());
-        for (Type t : type.getGenericInterfaces()) {
-            b.interfaces.add(traverse(b, t));
-        }
         return b;
     }
 
-    private static Bound traverse(Bound owner, TypeVariable<?> type) {
-        String name = type.getName();
-        for (Bound b : owner.parameters) {
-            if (name.equals(b.name)) {
-                return b;
-            }
-        }
-        if (owner.parent != null) {
-            Bound b = traverse(owner.parent, type);
-            if (b != null) {
-                return b;
-            }
-        }
-        for (TypeVariable variable : owner.type.getTypeParameters()) {
-            if (name.equals(variable.getName())) {
-                Bound b;
-                Type[] bounds = type.getBounds();
-                switch (bounds.length) {
-                    case 0:
-                        b = traverse(owner, Object.class);
-                        break;
-                    case 1:
-                        b = traverse(owner, bounds[0]);
-                        break;
-                    default:
-                        b = new Bound();
-                        for (Type t : bounds) {
-                            Bound bound = traverse(b, t);
-                            if (bound.type.isInterface()) {
-                                b.interfaces.add(bound);
-                            } else {
-                                b.superclass = bound;
-                            }
-                        }
-                        break;
-                }
-                b.parent = owner;
-                b.definition = variable;
-                b.name = name;
-                return b;
-            }
-        }
-        return null;
-    }
-
-    private static Bound traverse(Bound owner, WildcardType type) {
+    /**
+     * Returns resolved bound for type described by given bounds.
+     */
+    private static Bound traverseBoundedType(Bound parent, Type type, Type[] bounds) {
         Bound b;
-        Type[] bounds = type.getUpperBounds();
-        switch (bounds.length) {
-            case 0:
-                b = traverse(owner, Object.class);
-                break;
-            case 1:
-                b = traverse(owner, bounds[0]);
-                break;
-            default:
-                b = new Bound();
+        if (bounds.length == 1) {
+            b = traverse(parent, bounds[0]);
+        } else {
+            b = new Bound();
+            if (bounds.length == 0) {
+                populateClassBound(b, Object.class);
+            } else {
                 for (Type t : bounds) {
-                    Bound bound = traverse(b, t);
+                    Bound bound = traverse(parent, t);
                     if (bound.type.isInterface()) {
                         b.interfaces.add(bound);
                     } else {
                         b.superclass = bound;
                     }
                 }
-                break;
+            }
         }
-        b.parent = owner;
         b.definition = type;
-        b.name = "?";
+        b.parent = parent;
         return b;
     }
 
+    /**
+     * Returns resolved bound for {@link WildcardType}.
+     */
+    private static Bound traverseWildcardType(Bound parent, WildcardType type) {
+        return traverseBoundedType(parent, type, type.getUpperBounds());
+    }
+
+    /**
+     * Returns resolved bound for {@link TypeVariable}.
+     */
+    private static Bound traverseTypeVariable(Bound parent, TypeVariable type) {
+        return traverseBoundedType(parent, type, type.getBounds());
+    }
+
+    private static Bound lookupTypeVariable(Bound parent, TypeVariable type) {
+        GenericParameter parameter = null;
+        for (GenericParameter g : parent.genericParameters) {
+            if (g.expected == type || g.received == type) {
+                parameter = g;
+                break;
+            }
+        }
+        if (parameter != null && parent.parent != null) {
+            for (GenericParameter g : parent.parent.genericParameters) {
+                if (g.expected instanceof TypeVariable && ((TypeVariable) g.expected).getName().equals(type.getName())) {
+                    if (g.received != null) {
+                        return traverse(parent.parent, g.received);
+                    } else {
+                        return traverseTypeVariable(parent.parent, (TypeVariable) g.expected);
+                    }
+                }
+            }
+        }
+        return traverseTypeVariable(parent, type);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static Bound traverse(Bound parent, Type type) {
+        if (type instanceof TypeVariable) {
+            return lookupTypeVariable(parent, (TypeVariable) type);
+        }
+        if (type instanceof WildcardType) {
+            return traverseWildcardType(parent, (WildcardType) type);
+        }
+        if (type instanceof GenericArrayType) {
+            return traverseGenericArrayBound(parent, (GenericArrayType) type);
+        }
+        if (type != null) {
+            Bound b = new Bound();
+            b.parent = parent;
+            if (type instanceof Class) {
+                populateClassBound(b, (Class) type);
+            }
+            if (type instanceof ParameterizedType) {
+                populateParameterisedBound(b, (ParameterizedType) type);
+            }
+            for (GenericParameter g : b.genericParameters) {
+                if (g.received != null) {
+                    b.parameters.add(traverse(b, g.received));
+                } else {
+                    b.parameters.add(traverse(b, g.expected));
+                }
+            }
+            return b;
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
     @Override
     public String toString() {
@@ -213,12 +306,12 @@ public class Bound
     }
 
 
-    /**
+    *//**
      * Returns string with formatted debug information about this tag and its children.
      *
      * @param info line feed separated parameters to display for this tag.
      * @see #getDebugInfo()
-     */
+     *//*
     protected String toString(String info) {
         StringBuilder out = new StringBuilder();
         if (type != null || name != null) {
@@ -229,7 +322,7 @@ public class Bound
                 if (name != null) {
                     out.append(" = ");
                 }
-                out.append(type.getName());
+                out.append(((Class)type).getName());
             }
         }
         if (info != null) {
@@ -243,5 +336,5 @@ public class Bound
         return out.toString();
     }
 
-
+*/
 }

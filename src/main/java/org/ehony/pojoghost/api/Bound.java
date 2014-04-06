@@ -16,7 +16,6 @@ public interface Bound {
 
     /**
      * Get actual class instance that this bound represents.
-     * @return Instance of {@link Class} or {@code null} is bound is a generic type.
      */
     Type getType();
 
