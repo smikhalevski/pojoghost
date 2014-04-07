@@ -51,7 +51,7 @@ public class Bound
 
     /**
      * Returns <code>true</code> if this bound represents composition of classes
-     * and thou does not have any explicit reference {@link Class}.
+     * and thus does not have any explicit reference {@link Class}.
      */
     public boolean isComposition() {
         return type == null && !(superclass == null && interfaces.isEmpty());
@@ -114,19 +114,21 @@ public class Bound
     }
 
     /**
-     * Inserts data stored in {@link ParameterizedType} object into bound
-     * omitting generic parameter resolution.
+     * Returns resolved bound for {@link ParameterizedType}.
      */
-    private static void populateParameterisedBound(Bound bound, ParameterizedType type) {
-        // Explicit cast to Class can be done because getRawType()
-        // returns the type representing the class or interface that
-        // declared type of parameterised type.
-        populateClassBound(bound, (Class) type.getRawType());
+    private static Bound traverseParameterisedBound(Bound parent, ParameterizedType type) {
+        // Used traversing for future compatibility.
+        // Optionally explicit cast to Class can be done because getRawType()
+        // returns the type representing the class or interface that declared
+        // type of parameterised type.
+        Bound b = traverse(parent, type.getRawType());
         int i = 0;
         for (Type t : type.getActualTypeArguments()) {
-            bound.genericParameters.get(i++).received = t;
+            b.genericParameters.get(i++).received = t;
         }
-        bound.definition = type;
+        b.definition = type;
+        b.parent = parent;
+        return b;
     }
 
     /**
@@ -216,32 +218,33 @@ public class Bound
 
 
     public static Bound traverse(Bound parent, Type type) {
+        Bound b = null;
         if (type instanceof TypeVariable) {
-            return lookupTypeVariable(parent, (TypeVariable) type);
+            b = lookupTypeVariable(parent, (TypeVariable) type);
         }
         if (type instanceof WildcardType) {
-            return traverseWildcardType(parent, (WildcardType) type);
+            b = traverseWildcardType(parent, (WildcardType) type);
         }
         if (type instanceof GenericArrayType) {
-            return traverseGenericArrayBound(parent, (GenericArrayType) type);
+            b = traverseGenericArrayBound(parent, (GenericArrayType) type);
         }
-        if (type != null) {
-            Bound b = new Bound();
+        if (type instanceof ParameterizedType) {
+            b = traverseParameterisedBound(parent, (ParameterizedType) type);
+        }
+        if (type instanceof Class) {
+            b = new Bound();
             b.parent = parent;
-            if (type instanceof Class) {
-                populateClassBound(b, (Class) type);
+            populateClassBound(b, (Class) type);
+        }
+        if (b == null) {
+            throw new IllegalArgumentException("Unexpected type.");
+        }
+        for (GenericParameter g : b.genericParameters) {
+            if (g.received != null) {
+                b.parameters.add(traverse(b, g.received));
+            } else {
+                b.parameters.add(traverse(b, g.expected));
             }
-            if (type instanceof ParameterizedType) {
-                populateParameterisedBound(b, (ParameterizedType) type);
-            }
-            for (GenericParameter g : b.genericParameters) {
-                if (g.received != null) {
-                    b.parameters.add(traverse(b, g.received));
-                } else {
-                    b.parameters.add(traverse(b, g.expected));
-                }
-            }
-            return b;
         }
         return null;
     }
