@@ -19,11 +19,14 @@ public interface Bound {
      */
     Type getType();
 
+    /**
+     * Get bound that represents extended superclass.
+     */
     Bound getParent();
 
     /**
      * Get bounds of generic parameters specified for this bound.
-     * 
+     * Empty list must be returned if bound is not parameterized.
      */
     List<Bound> getParameters();
 
@@ -33,9 +36,9 @@ public interface Bound {
     List<Bound> getInterfaces();
 
     /**
-     * Get bound for interface of super class implemented or extended by this bound.
-     * @param type class to look for in hierarchy.
-     * @return Bound that represents given type of {@code null} if 
+     * Get bound for interface or superclass implemented or extended by this bound.
+     * @param type class to look for in bounds hierarchy.
+     * @return Bound that represents given type.
      */
     Bound findImplementedBoundOfType(Class<?> type);
 }

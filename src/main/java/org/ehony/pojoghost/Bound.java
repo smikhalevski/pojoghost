@@ -13,7 +13,7 @@ public class Bound
 {
 
     /**
-     * Actual type of this bound.
+     * Actual (raw) type of this bound.
      */
     private Type definition;
     /**
@@ -100,6 +100,7 @@ public class Bound
     /**
      * Inserts data stored in {@link Class} object into bound
      * omitting generic parameter resolution.
+     * <p>Applicable for both for anonymous and non-parameterised classes.</p>
      */
     private static void populateClassBound(Bound bound, Class<?> type) {
         bound.type = type;
@@ -217,7 +218,14 @@ public class Bound
 
 
 
-    public static Bound traverse(Bound parent, Type type) {
+    public static Bound traverse(Type type) {
+        return traverse(null, type);
+    }
+
+    protected static Bound traverse(Bound parent, Type type) {
+        if (type == null) {
+            return null;
+        }
         Bound b = null;
         if (type instanceof TypeVariable) {
             b = lookupTypeVariable(parent, (TypeVariable) type);
@@ -237,7 +245,7 @@ public class Bound
             populateClassBound(b, (Class) type);
         }
         if (b == null) {
-            throw new IllegalArgumentException("Unexpected type.");
+            throw new IllegalArgumentException("Unexpected type: " + type);
         }
         for (GenericParameter g : b.genericParameters) {
             if (g.received != null) {
@@ -246,98 +254,76 @@ public class Bound
                 b.parameters.add(traverse(b, g.expected));
             }
         }
-        return null;
+        return b;
     }
 
+//    // <editor-fold desc="Debug">
+//
+//
+//    @Override
+//    public String toString() {
+//        return toString(getDebugInfo());
+//    }
+//
+//    protected String getDebugInfo() {
+//        for (Bound b = parent; b != null; b = b.parent) {
+//            if (type == b.type) {
+//                return "(cyclic class definition)";
+//            }
+//        }
+//        StringBuilder out = new StringBuilder();
+//        if (!parameters.isEmpty()) {
+//            StringBuilder code = new StringBuilder();
+//            for (Bound b : parameters) {
+//                code.append(",\n").append(b);
+//            }
+//
+//            String c = code.substring(2).replace("\n", "\n\t");
+//            if (c.contains("\n")) {
+//                out.append("\n<\n\t").append(c).append("\n>");
+//            } else {
+//                out.append('<').append(c).append('>');
+//            }
+//        }
+//        if (superclass != null) {
+//            out.append("\nextends ").append(superclass);
+//        }
+//        if (!interfaces.isEmpty()) {
+//            StringBuilder code = new StringBuilder();
+//            for (Bound b : interfaces) {
+//                code.append(",\n").append(b);
+//            }
+//            String c = code.substring(2).replace("\n", "\n\t");
+//            if (c.contains("\n")) {
+//                out.append("\nimplements [\n\t").append(c).append("\n]");
+//            } else {
+//                out.append("\nimplements ").append(c);
+//            }
+//        }
+//        return out.toString();
+//    }
+//
+//    /**
+//     * Returns string with formatted debug information about this tag and its children.
+//     *
+//     * @param info line feed separated parameters to display for this tag.
+//     * @see #getDebugInfo()
+//     */
+//    protected String toString(String info) {
+//        StringBuilder out = new StringBuilder();
+//        if (type != null) {
+//            out.append(((Class) type).getName());
+//        }
+//        if (info != null) {
+//            if (info.contains("\n")) {
+//                // Indenting info only when it contains line feeds.
+//                out.append(info.replace("\n", "\n\t")).append('\n');
+//            } else {
+//                out.append(info);
+//            }
+//        }
+//        return out.toString();
+//    }
+//    // </editor-fold>
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-    @Override
-    public String toString() {
-        return toString(getDebugInfo());
-    }
-
-    protected String getDebugInfo() {
-        for (Bound b = parent; b != null; b = b.parent) {
-            if (type == b.type) {
-                return "(recursive definition)";
-            }
-        }
-        StringBuilder out = new StringBuilder();
-        if (!parameters.isEmpty()) {
-            StringBuilder code = new StringBuilder();
-            for (Bound b : parameters) {
-                code.append(",\n").append(b);
-            }
-            
-            String c = code.substring(2).replace("\n", "\n\t");
-            if (c.contains("\n")) {
-                out.append("\n<\n\t").append(c).append("\n>");
-            } else {
-                out.append('<').append(c).append('>');
-            }
-        }
-        if (superclass != null) {
-            out.append("\nextends ").append(superclass);
-        }
-        if (!interfaces.isEmpty()) {
-            StringBuilder code = new StringBuilder();
-            for (Bound b : interfaces) {
-                code.append(",\n").append(b);
-            }
-            
-            String c = code.substring(2).replace("\n", "\n\t");
-            if (c.contains("\n")) {
-                out.append("\nimplements [\n\t").append(c).append("\n]");
-            } else {
-                out.append("\nimplements ").append(c);
-            }
-        }
-        return out.toString();
-    }
-
-
-    *//**
-     * Returns string with formatted debug information about this tag and its children.
-     *
-     * @param info line feed separated parameters to display for this tag.
-     * @see #getDebugInfo()
-     *//*
-    protected String toString(String info) {
-        StringBuilder out = new StringBuilder();
-        if (type != null || name != null) {
-            if (name != null) {
-                out.append(name);
-            }
-            if (type != null) {
-                if (name != null) {
-                    out.append(" = ");
-                }
-                out.append(((Class)type).getName());
-            }
-        }
-        if (info != null) {
-            if (info.contains("\n")) {
-                // Indenting info only when it contains line feeds.
-                out.append(info.replace("\n", "\n\t")).append('\n');
-            } else {
-                out.append(info);
-            }
-        }
-        return out.toString();
-    }
-
-*/
 }

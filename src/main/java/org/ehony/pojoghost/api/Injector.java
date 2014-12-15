@@ -20,15 +20,15 @@ public interface Injector
      * @param type type of object to create.
      * @return A newly created instance.
      */
-    <T> T createInstance(Class<T> type);
+    <Type> Type createInstance(Class<Type> type);
 
     /**
      * Instantiate an instance of the given object type possibly injecting
      * values into the object in the process.
      *
      * @param type type of object to create.
-     * @param instance instance of the type to create.
+     * @param instance hinting reference instance.
      * @return A newly created instance.
      */
-    <T> T createInstance(Class<T> type, T instance);
+    <Type> Type createInstance(Class<Type> type, Type instance);
 }

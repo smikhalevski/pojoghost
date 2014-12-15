@@ -25,10 +25,10 @@ public interface Converter<From, To>
      * 
      * @param from source object.
      * @param type class to convert source object to.
-     * @param <T> destination type.
+     * @param <Type> destination type.
      * @return Converted instance implementing <code>type</code>.
      */
-    <T extends To> T convert(From from, Class<T> type);
+    <Type extends To> Type convert(From from, Class<Type> type);
     
     /**
      * Detect weather converter is applicable for translation of given types.
